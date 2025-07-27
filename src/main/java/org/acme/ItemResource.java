@@ -79,7 +79,7 @@ public class ItemResource {
     @Path("uploadItem")
     public Response uploadItem(@RestForm("image") FileUpload file) throws IOException {
 
-        Product product = itemRecognition.detectAndSaveProduct(
+        itemRecognition.detectProduct(
                 Files.readAllBytes(file.uploadedFile()),
                 file.contentType()
         );

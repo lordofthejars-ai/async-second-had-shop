@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     document.getElementById("spinnerOverlay").style.display = "none";
                     setTimeout(() => {
-                        window.location.href = 'form.html?productId=' + data.id;
+                        window.location.href = 'upload.html';
                     }, 1000);
                 })
             } else {
