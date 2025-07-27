@@ -33,7 +33,7 @@ public class ItemRecognition {
         String base64Image = Base64.getEncoder().encodeToString(image);
         Image encodedImage = Image.builder().base64Data(base64Image).mimeType(mime).build();
 
-        Uni<Item> item = imageProcessingService.extractInfo(encodedImage);
+        /**Uni<Item> item = imageProcessingService.extractInfo(encodedImage);
         item.subscribe()
             .with(i -> {
                 categorizationService.categorize(i)
@@ -55,6 +55,28 @@ public class ItemRecognition {
                         logger.infof("Detected %s %s", icdto.brand, icdto.model);
                         newItemProcessed.send(icdto);
                     });
+            });*/
+        imageProcessingService.extractInfo(encodedImage)
+            .onItem().transformToUni(item ->
+                categorizationService.categorize(item)
+                    .onItem().transform(ic -> {
+                        ItemCategoryDto dto = new ItemCategoryDto();
+                        dto.description = item.description;
+                        dto.brand = item.brand;
+                        dto.label = item.label;
+                        dto.condition = item.condition;
+                        dto.model = item.model;
+                        dto.price = item.price;
+
+                        dto.category = ic.category;
+                        dto.subcategory = ic.subcategory;
+                        return dto;
+                    })
+            )
+            .subscribe()
+            .with(dto -> {
+                logger.infof("Detected %s %s", dto.brand, dto.model);
+                newItemProcessed.send(dto);
             });
 
     }
